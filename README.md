@@ -91,16 +91,20 @@ add yourself to the `users:` list so commits get a real email address.
 contains the path to your private vault and the local photo source — both
 personal.
 
-### 4. Make sure git auth is set up
+### 4. Set up GitHub authentication
 
-The app shells out to `git` for clone/pull/push. Use whatever auth you
-already use for that GitHub account:
+The app automatically pulls from the vault repo when it launches and
+pushes after every save. For that to work, your computer needs to talk
+to GitHub without prompting you for a password each time.
 
-- **SSH** (recommended): `ssh -T git@github.com` should succeed before running the app
-- **HTTPS**: `git config --global credential.helper osxkeychain` (macOS) so pushes don't prompt
+**Follow the [Git authentication setup](#git-authentication-setup)
+section near the bottom of this README before continuing.** It walks
+through generating a Personal Access Token on GitHub, storing it in your
+OS's secure credential store, and doing a one-time terminal
+authentication so the Desktop app works silently afterward.
 
-The app does **not** manage credentials or tokens. If `git push` works for
-you from the command line, it'll work for the app.
+The app itself does **not** manage credentials. If `git push` works for
+you from the terminal, it'll work for the app.
 
 ### 5. Run it
 
@@ -189,6 +193,217 @@ Open this folder as an Obsidian vault for graph view, search, and editing.
 Each file starts with YAML frontmatter (the structured fields from the brief —
 Name, Lives in, Birthdate, Parents, Siblings…) followed by a markdown body.
 Cross-references use Obsidian-style `[[Wikilinks]]`.
+
+## Git authentication setup
+
+The app pulls from the vault repo on every launch and pushes after every
+save — silently, with no prompts. To make that work on a fresh computer
+you need to give git a Personal Access Token (PAT) once, and it gets
+stored in your operating system's secure credential store. Future git
+operations use the stored token automatically.
+
+> **A note on the order of steps.** The Desktop launcher runs git in the
+> background where it can't show password prompts. **You must complete
+> the terminal authentication step (step 5 below) before you double-click
+> the Desktop launcher for the first time.** Otherwise git will silently
+> hang waiting for input you can't see.
+
+### Before you start
+
+You need three things:
+
+1. **A GitHub account.** Sign up free at
+   [github.com/join](https://github.com/join) if you don't have one.
+
+2. **Collaborator access to the vault repo.** The person who created the
+   private vault repo (the "vault owner") must invite you as a
+   collaborator. They do this on the vault repo on GitHub:
+   **Settings → Collaborators → Add people**, then search for your
+   GitHub username and send the invite. Accept the invite in your email
+   or at [github.com/notifications](https://github.com/notifications)
+   before continuing.
+
+3. **Git installed on your computer.** Check with `git --version` in a
+   terminal. If it's missing:
+   - **macOS** — running `git` once will prompt to install Xcode Command
+     Line Tools; accept.
+   - **Windows** — install [Git for Windows](https://git-scm.com/download/win).
+   - **Linux** — `sudo apt install git` (Debian/Ubuntu) or your distro's
+     equivalent.
+
+### Step 1 — Generate a Personal Access Token on GitHub
+
+A Personal Access Token is a long random string that acts like a
+password, but is scoped to specific repositories and specific
+permissions.
+
+1. Go to **[github.com/settings/personal-access-tokens](https://github.com/settings/personal-access-tokens)**.
+   (Or: click your profile picture → **Settings** → **Developer
+   settings** in the left sidebar → **Personal access tokens** →
+   **Fine-grained tokens**.)
+2. Click the green **Generate new token** button at the top right.
+3. Fill in the form exactly like this:
+
+   | Field | What to enter |
+   | --- | --- |
+   | **Token name** | Something memorable like `Family Vault on MacBook` |
+   | **Expiration** | 1 year (the maximum). Set a calendar reminder to renew it. |
+   | **Description** | Optional. e.g. "Used by the Family Vault app to push memories." |
+   | **Resource owner** | Your own account (the default) |
+   | **Repository access** | Select **Only select repositories**, then click **Select repositories** and pick **just the vault repo**. Do not give it access to anything else. |
+   | **Repository permissions → Contents** | Change from "No access" to **Read and write** |
+   | **Repository permissions → Metadata** | This auto-changes to **Read-only**. Leave it. |
+   | All other permissions | Leave at "No access" |
+
+4. Scroll to the bottom and click **Generate token**.
+5. **GitHub now shows your token. Copy it immediately into a temporary
+   safe place** (a sticky note app, a password manager — anywhere you can
+   read it in 2 minutes). The token starts with `github_pat_` and is
+   about 90 characters long.
+
+   **You will not be able to see it again.** If you close the page
+   without copying it, you have to delete the token and generate a new
+   one.
+
+### Step 2 — Tell git to remember credentials securely
+
+Run **one** of the following in your terminal, matching your operating
+system. This is a one-time setup.
+
+**macOS**
+
+```bash
+git config --global credential.helper osxkeychain
+```
+
+This stores tokens in the macOS Keychain.
+
+**Windows** (using Git for Windows, which is what you installed above)
+
+```bash
+git config --global credential.helper manager
+```
+
+This stores tokens in the Windows Credential Manager.
+
+**Linux** — install the secret-storage helper, then configure git to use it:
+
+```bash
+sudo apt install -y libsecret-1-0 libsecret-1-dev
+sudo make --directory=/usr/share/doc/git/contrib/credential/libsecret
+git config --global credential.helper /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret
+```
+
+(If you don't want to compile the helper, you can fall back to
+`git config --global credential.helper "cache --timeout=86400"` for a
+24-hour in-memory cache, but you'll have to re-enter the token every
+day.)
+
+### Step 3 — Use the HTTPS form of the vault URL in config.yaml
+
+Open `config.yaml` (in this code repo, the one you cloned) and set:
+
+```yaml
+git_remote: https://github.com/OWNER/VAULT-REPO.git
+```
+
+Replace `OWNER` with the GitHub username/org that owns the vault, and
+`VAULT-REPO` with the repo name. **Note `https://` — not `git@`.** SSH
+URLs won't use your token.
+
+### Step 4 — Authenticate once in the terminal
+
+This is the step that's easy to skip but essential: you need to trigger
+**one** git operation in your terminal so git asks for your username +
+token and stores them. The Desktop app can't show password prompts, so
+this has to happen here first.
+
+From inside the code repo's folder, run:
+
+```bash
+git ls-remote https://github.com/OWNER/VAULT-REPO.git
+```
+
+(Use the exact URL you put in `config.yaml`.)
+
+The first time, git will ask:
+
+```
+Username for 'https://github.com': <type your GitHub username>
+Password for 'https://USERNAME@github.com': <paste your token>
+```
+
+Important details:
+
+- **Username** is your GitHub username (not your email).
+- **Password** is the PAT from step 1 — *not* your GitHub login
+  password. (GitHub stopped accepting account passwords for git
+  operations in 2021.)
+- When you paste the token, **nothing will appear on screen**. That's
+  the terminal hiding your password — it's normal. Just paste and press
+  Enter.
+
+If it worked, git prints a list of commit hashes (something like
+`abc123…  HEAD`). Your token is now stored in your OS's credential store.
+
+If it asks again or you see "Authentication failed":
+
+- You may have typed the wrong username, or pasted the wrong thing
+  into "Password".
+- Re-run the command and try again. If it keeps failing, delete the
+  stored credential (see "Renewing the token" below) and re-paste.
+
+### Step 5 — You're done
+
+You can now safely delete your temporary copy of the token. Git stored
+it in the OS credential store; you'll never need to type it again until
+it expires.
+
+Launch the Desktop app and the first memory you save will push
+automatically.
+
+### Renewing the token (every ~1 year)
+
+When the token expires, the app will fail to push and show a git error
+message in the UI. To fix:
+
+1. Generate a new PAT (repeat Step 1).
+2. Delete the old stored credential so git asks for the new one:
+
+   - **macOS:** open **Keychain Access**, search for `github.com`,
+     right-click the entry, **Delete**.
+   - **Windows:** open **Credential Manager** (search for it in Start),
+     **Windows Credentials**, find `git:https://github.com`, click
+     **Remove**.
+   - **Linux (libsecret):** `secret-tool clear protocol https host github.com`
+     (or use a tool like Seahorse to delete it manually).
+
+3. Re-run the `git ls-remote` command from Step 4 and paste the new
+   token when prompted.
+
+### Alternative: SSH key instead of a PAT
+
+Prefer SSH? It doesn't expire, and once set up it's invisible. The
+trade-off is that the setup is a bit more conceptual (public/private
+keys, ssh-agent).
+
+In short:
+
+1. `ssh-keygen -t ed25519 -C "your-github-email@example.com"`
+   (accept defaults; no passphrase is fine on a personal machine).
+2. On macOS, append to `~/.ssh/config`:
+   `Host github.com\n  UseKeychain yes\n  AddKeysToAgent yes\n  IdentityFile ~/.ssh/id_ed25519`
+   and run `ssh-add --apple-use-keychain ~/.ssh/id_ed25519`.
+   On Linux: `eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_ed25519`.
+3. Copy `~/.ssh/id_ed25519.pub` to your clipboard and add it at
+   [github.com/settings/keys](https://github.com/settings/keys) →
+   **New SSH key**.
+4. Test with `ssh -T git@github.com`.
+5. Use the SSH form of the vault URL in `config.yaml`:
+   `git_remote: git@github.com:OWNER/VAULT-REPO.git`.
+
+After that, no terminal authentication step is needed — SSH doesn't
+prompt — so you can go straight to launching the app.
 
 ## Development
 

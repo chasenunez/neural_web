@@ -106,6 +106,55 @@ def test_freeform_save_creates_files(fake_vault: Path):
     assert len(memories) == 1
 
 
+def test_photo_pick_is_stable_across_reruns(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """The random photo pick must persist across script reruns.
+
+    Streamlit re-executes the script top-to-bottom on every widget change
+    (every keystroke into a form field, every checkbox click). The photo
+    should be picked exactly *once* per visit and cached in session_state,
+    so the image doesn't shuffle while the user is mid-typing.
+
+    This test uses several photos so a buggy re-pick would almost certainly
+    return a different file on a later rerun.
+    """
+    vault = tmp_path / "vault"
+    photos_dir = tmp_path / "pics"
+    photos_dir.mkdir()
+    from PIL import Image
+    palette = [(100,150,200),(200,150,100),(150,200,100),(100,200,150),(200,100,150)]
+    for i, color in enumerate(palette):
+        Image.new("RGB", (50, 50), color).save(photos_dir / f"p{i}.jpg")
+
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        f"vault_path: {vault}\n"
+        "git_remote: null\n"
+        f"photos_source: {photos_dir}\n"
+    )
+    from familyvault import config as cfg_mod
+    monkeypatch.setattr(cfg_mod, "default_config_path", lambda: config_path)
+
+    at = AppTest.from_file(str(APP_PATH), default_timeout=15)
+    _run(at)
+    at.text_input[0].set_value("Chase").run()
+    at.button[0].click().run()
+    next(b for b in at.button if "photo" in b.label.lower()).click().run()
+
+    first_pick = at.session_state["photo_pick"]
+    assert first_pick, "first visit should populate photo_pick"
+
+    # Type into the "What" field. This forces a Streamlit rerun, which would
+    # call _ensure_pick again. The cache must hand back the same path.
+    title = next(ti for ti in at.text_input if ti.label == "What")
+    title.set_value("some title").run()
+    assert at.session_state["photo_pick"] == first_pick
+
+    # And again with another field, just to be thorough.
+    who = next(ti for ti in at.text_input if ti.label == "Who")
+    who.set_value("Mom").run()
+    assert at.session_state["photo_pick"] == first_pick
+
+
 def test_photo_page_renders(fake_vault: Path):
     """Regression: the photo page must not crash on st.image's numpy chain.
 
