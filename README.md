@@ -158,3 +158,20 @@ Open this folder as an Obsidian vault for graph view, search, and editing.
 Each file starts with YAML frontmatter (the structured fields from the brief —
 Name, Lives in, Birthdate, Parents, Siblings…) followed by a markdown body.
 Cross-references use Obsidian-style `[[Wikilinks]]`.
+
+## License
+
+Copyright (c) 2026 Chase Núñez. Released under the
+[PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0).
+See [LICENSE](LICENSE) for the full text.
+
+In short:
+
+- **You may** use, modify, and share this software for any **noncommercial**
+  purpose — personal projects, family use, education, research, hobby work,
+  or by a nonprofit or government organization.
+- **You may not** use it for commercial purposes (selling it, building a
+  paid product on top of it, running it inside a for-profit company's
+  workflow, etc.) without a separate written license.
+
+If you'd like to use this commercially, get in touch.
