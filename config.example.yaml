@@ -1,0 +1,30 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  VAULT REPO — where your memories live
+# ─────────────────────────────────────────────────────────────────────────────
+#  This is the PRIVATE GitHub repo that holds your family's memories, photos,
+#  people, and places. It is separate from the code repo for this app — the
+#  code can be public, the vault MUST be private.
+#
+#  Replace the URL below with your own private repo. Use SSH or HTTPS — the
+#  app uses whatever auth your local `git` is configured with.
+#
+#  Set to `null` to disable git sync entirely (local-only mode, useful for
+#  testing).
+git_remote: git@github.com:your-org/your-private-vault.git
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Where to check the vault out on this machine. Relative paths are resolved
+# next to this config file. Created by cloning git_remote on first run.
+vault_path: ./vault
+
+# Personal photo source folder. Scanned recursively for .jpg/.jpeg/.png/.heic.
+# Used by the "be prompted with a photo" flow. Set to null to disable that flow.
+photos_source: ~/Pictures
+
+# Known users. Login lets anyone type a name; entries here just give nicer
+# git author info. Optional.
+users:
+  - name: Mom
+    email: mom@example.com
+  - name: Dad
+    email: dad@example.com
