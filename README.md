@@ -1,10 +1,9 @@
 # Family Vault
 
-A calm, git-backed memory vault for a small group (≈10 family members). Memories
-are markdown files in an Obsidian-compatible structure; people and places are
+A git-backed memory vault. Memories are markdown files in an Obsidian-compatible structure; people and places are
 their own linked files, so the vault grows into a knowledge graph of who-was-where-when.
 
-The app prompts you with one of three flows each visit:
+The app prompts users with one of three flows each visit:
 
 1. **Write a memory in your own words** — who / what / where / when / why + story
 2. **Let a photo prompt a memory** — random pick from your personal photo folder, same form below it
@@ -17,14 +16,14 @@ Dataview-friendly YAML frontmatter.
 
 ## Two repos: code vs. vault
 
-This is critical. There are **two separate git repos**:
+There are **two separate git repos**:
 
 | Repo | What lives in it | Visibility |
 | --- | --- | --- |
-| **This repo** (`neural_web`) | The app code | Public is fine |
-| **Your vault repo** (you create) | Memories, people, places, photos | **MUST be private** |
+| **This repo** (`neural_web`) | The app code | Public |
+| **Your vault repo** (you create) | Memories, people, places, photos | **private** |
 
-The vault repo holds your family's photos, names, and stories. It must be a
+The vault repo holds photos, names, and stories. It must be a
 **private GitHub repository**. The app never writes anything personal into the
 code repo — the code repo and the vault are separate trees on disk.
 
@@ -32,7 +31,7 @@ code repo — the code repo and the vault are separate trees on disk.
 
 ### 1. Create a private vault repo
 
-On GitHub, create a new **private** repository (e.g. `your-family-vault`).
+On GitHub, create a new **private** repository.
 Leave it empty — no README, no `.gitignore`. The app will populate it on first run.
 
 ### 2. Install the app
@@ -122,7 +121,7 @@ commit your remote URL or local paths. Check `git status` before committing
 anything to this repo.
 
 **Login is identification, not authentication.** Anyone with the app and a
-copy of `config.yaml` can write as "Mom". The login name becomes the git
+copy of `config.yaml` can write as the same user. The login name becomes the git
 commit author so you can see who wrote what, but it is not an access control.
 Access control lives at the GitHub repo permissions layer — only invite
 trusted collaborators to the vault repo.
@@ -159,33 +158,3 @@ Open this folder as an Obsidian vault for graph view, search, and editing.
 Each file starts with YAML frontmatter (the structured fields from the brief —
 Name, Lives in, Birthdate, Parents, Siblings…) followed by a markdown body.
 Cross-references use Obsidian-style `[[Wikilinks]]`.
-
-## Development
-
-Run the full test suite:
-
-```bash
-.venv/bin/python -m pytest tests/ -v
-```
-
-Tests are split into unit suites per module plus two integration tests:
-`test_e2e_flow.py` exercises every flow at the data layer, and
-`test_ui_smoke.py` drives `app.py` through Streamlit's headless test harness.
-
-To run the app pointed at a throwaway test vault:
-
-```bash
-# Edit config.yaml to set git_remote: null and vault_path to a local dir
-.venv/bin/streamlit run app.py
-```
-
-## What this app deliberately does not do
-
-- **No fuzzy noun matching.** "Mary" and "Mary Smith" produce two files. Merging
-  is a future feature; for now the fill-blanks page lets you see and clean up.
-- **No NLP on the story body.** Only the explicit who/where fields produce
-  linked files.
-- **No conflict UI.** If `git pull` fails with a merge conflict, the app
-  surfaces the error and you resolve in the vault repo with normal git tools.
-- **No authentication.** Login is just identification for commit attribution.
-  The trust boundary is the GitHub repo's collaborator list.
