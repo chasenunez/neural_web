@@ -30,6 +30,14 @@ class Field:
     label: str        # Human label shown in UI
     kind: Kind
     target_type: str | None = None  # for LINK/LINKS: which Template type
+    hint: str | None = None         # short usage hint shown next to the input
+
+    def display_hint(self) -> str:
+        """Return the hint shown under the input. Falls back to a sensible
+        default for the field's Kind when no explicit hint was set."""
+        if self.hint is not None:
+            return self.hint
+        return _DEFAULT_HINTS.get(self.kind, "")
 
 
 @dataclass(frozen=True)
@@ -58,27 +66,49 @@ def _blank(kind: Kind) -> Any:
     return ""
 
 
+_DEFAULT_HINTS: dict[Kind, str] = {
+    Kind.LINK: "One name",
+    Kind.LINKS: "Separate multiple names with commas",
+    Kind.DATE: "YYYY-MM-DD",
+    Kind.URL: "Paste a full URL",
+    Kind.NUMBER: "A number",
+}
+
+
 PERSON = Template(
     type_name="Person",
     folder="People",
     fields=(
-        Field("name", "Name", Kind.TEXT),
-        Field("lives_in", "Lives in", Kind.LINK, target_type="Place"),
+        Field("name", "Name", Kind.TEXT,
+              hint="First and last, e.g. Mary Smith"),
+        Field("lives_in", "Lives in", Kind.LINK, target_type="Place",
+              hint="A city, town, or specific place"),
         Field("birthdate", "Birthdate", Kind.DATE),
         Field("birthplace", "Birthplace", Kind.LINK, target_type="Place"),
-        Field("parents", "Parents", Kind.LINKS, target_type="Person"),
-        Field("siblings", "Siblings", Kind.LINKS, target_type="Person"),
+        Field("parents", "Parents", Kind.LINKS, target_type="Person",
+              hint="Two names, separated by a comma"),
+        Field("siblings", "Siblings", Kind.LINKS, target_type="Person",
+              hint="Separate multiple names with commas"),
         Field("partner", "Partner", Kind.LINK, target_type="Person"),
-        Field("children", "Children", Kind.LINKS, target_type="Person"),
-        Field("core_memories", "Core Memories", Kind.LINKS, target_type="Memory"),
-        Field("paternal_grandparents", "Paternal Grandparents", Kind.LINKS, target_type="Person"),
-        Field("maternal_grandparents", "Maternal Grandparents", Kind.LINKS, target_type="Person"),
-        Field("extended_family", "Extended Family", Kind.LINKS, target_type="Person"),
+        Field("children", "Children", Kind.LINKS, target_type="Person",
+              hint="Separate multiple names with commas"),
+        Field("core_memories", "Core Memories", Kind.LINKS, target_type="Memory",
+              hint="Reference existing memories by title"),
+        Field("paternal_grandparents", "Paternal Grandparents", Kind.LINKS, target_type="Person",
+              hint="Two names, separated by a comma"),
+        Field("maternal_grandparents", "Maternal Grandparents", Kind.LINKS, target_type="Person",
+              hint="Two names, separated by a comma"),
+        Field("extended_family", "Extended Family", Kind.LINKS, target_type="Person",
+              hint="Aunts, uncles, cousins — comma-separated"),
         Field("occupation", "Occupation", Kind.TEXT),
-        Field("degrees", "Degrees", Kind.LONGTEXT),
-        Field("past_addresses", "Past Addresses", Kind.LINKS, target_type="Place"),
-        Field("friends", "Friends", Kind.LINKS, target_type="Person"),
-        Field("employers", "Employers", Kind.LONGTEXT),
+        Field("degrees", "Degrees", Kind.LONGTEXT,
+              hint="One per line, e.g. BA English — Boston U — 2004"),
+        Field("past_addresses", "Past Addresses", Kind.LINKS, target_type="Place",
+              hint="Cities or places they've lived, comma-separated"),
+        Field("friends", "Friends", Kind.LINKS, target_type="Person",
+              hint="Separate multiple names with commas"),
+        Field("employers", "Employers", Kind.LONGTEXT,
+              hint="One per line, e.g. Acme Corp — 2010 to 2015"),
     ),
 )
 
@@ -87,12 +117,17 @@ PLACE = Template(
     type_name="Place",
     folder="Places",
     fields=(
-        Field("name", "Name", Kind.TEXT),
-        Field("maps_link", "Google Maps link", Kind.URL),
-        Field("latitude", "Latitude", Kind.NUMBER),
-        Field("longitude", "Longitude", Kind.NUMBER),
+        Field("name", "Name", Kind.TEXT,
+              hint="What you'd call this place in conversation"),
+        Field("maps_link", "Google Maps link", Kind.URL,
+              hint="Paste a Google Maps URL — coordinates will be extracted"),
+        Field("latitude", "Latitude", Kind.NUMBER,
+              hint="Decimal degrees, e.g. 42.3601"),
+        Field("longitude", "Longitude", Kind.NUMBER,
+              hint="Decimal degrees, e.g. -71.0589"),
         Field("address", "Address", Kind.TEXT),
-        Field("notes", "Notes", Kind.LONGTEXT),
+        Field("notes", "Notes", Kind.LONGTEXT,
+              hint="Anything else worth remembering about this place"),
     ),
 )
 
@@ -101,13 +136,18 @@ MEMORY = Template(
     type_name="Memory",
     folder="Memories",
     fields=(
-        Field("title", "Title (what)", Kind.TEXT),
+        Field("title", "Title (what)", Kind.TEXT,
+              hint="A short title for this memory"),
         Field("when", "When", Kind.DATE),
-        Field("who", "Who", Kind.LINKS, target_type="Person"),
-        Field("where", "Where", Kind.LINKS, target_type="Place"),
-        Field("why", "Why", Kind.LONGTEXT),
+        Field("who", "Who", Kind.LINKS, target_type="Person",
+              hint="People present — separate multiple names with commas"),
+        Field("where", "Where", Kind.LINKS, target_type="Place",
+              hint="Places involved — separate multiple with commas"),
+        Field("why", "Why", Kind.LONGTEXT,
+              hint="Why does this moment matter?"),
         Field("photo", "Photo", Kind.TEXT),  # filename only, embedded in body
-        Field("story", "Story", Kind.LONGTEXT),
+        Field("story", "Story", Kind.LONGTEXT,
+              hint="Tell it in your own words"),
     ),
 )
 

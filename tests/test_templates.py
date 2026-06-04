@@ -45,3 +45,20 @@ def test_place_has_maps_link():
 
 def test_type_in_empty_frontmatter():
     assert templates.PERSON.empty_frontmatter()["type"] == "person"
+
+
+def test_explicit_hint_used():
+    f = templates.PERSON.field("paternal_grandparents")
+    assert "two" in f.display_hint().lower()
+
+
+def test_default_hint_for_kind():
+    # No explicit hint on Birthdate; should fall back to the DATE default.
+    f = templates.PERSON.field("birthdate")
+    assert f.hint is None
+    assert "YYYY-MM-DD" in f.display_hint()
+
+
+def test_text_field_with_no_hint_returns_empty():
+    f = templates.PERSON.field("occupation")
+    assert f.display_hint() == ""

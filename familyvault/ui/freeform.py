@@ -6,8 +6,15 @@ import datetime as _dt
 
 import streamlit as st
 
-from .. import memory_builder
+from .. import memory_builder, templates
 from . import _save
+
+_MEM = templates.MEMORY
+
+
+def _hint(key: str) -> str:
+    f = _MEM.field(key)
+    return f.display_hint() if f else ""
 
 
 def render() -> None:
@@ -16,14 +23,12 @@ def render() -> None:
     st.write("")
 
     with st.form("freeform_memory", clear_on_submit=False):
-        title = st.text_input("What", placeholder="A short title for this memory")
+        title = st.text_input("What", placeholder=_hint("title"))
         when = st.date_input("When", value=_dt.date.today())
-        who = st.text_input("Who", placeholder="Names, separated by commas")
-        where = st.text_input("Where", placeholder="Places, separated by commas")
-        why = st.text_area("Why", height=80,
-                           placeholder="Why does this memory matter?")
-        story = st.text_area("Story", height=260,
-                             placeholder="Tell it in your own words")
+        who = st.text_input("Who", placeholder=_hint("who"), help=_hint("who"))
+        where = st.text_input("Where", placeholder=_hint("where"), help=_hint("where"))
+        why = st.text_area("Why", height=80, placeholder=_hint("why"))
+        story = st.text_area("Story", height=260, placeholder=_hint("story"))
         submitted = st.form_submit_button("Save memory")
 
     st.write("")

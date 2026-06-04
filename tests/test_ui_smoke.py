@@ -106,6 +106,19 @@ def test_freeform_save_creates_files(fake_vault: Path):
     assert len(memories) == 1
 
 
+def test_login_button_clickable_without_typing(fake_vault: Path):
+    """Regression: Enter button must not be locked behind a committed value."""
+    at = AppTest.from_file(str(APP_PATH), default_timeout=10)
+    _run(at)
+    # Find the form submit button labelled "Enter" — there is exactly one.
+    submits = [b for b in at.button if b.label == "Enter"]
+    assert len(submits) == 1
+    assert submits[0].disabled is False
+    # Clicking with no input shows a warning, not a crash.
+    submits[0].click().run()
+    assert not at.exception
+
+
 def test_fill_blanks_lists_incomplete(fake_vault: Path):
     # Seed the vault with an incomplete entry by going through the save flow first
     at = AppTest.from_file(str(APP_PATH), default_timeout=10)

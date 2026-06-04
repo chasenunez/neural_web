@@ -44,7 +44,9 @@ p, label, .stMarkdown {
   box-shadow: 0 0 0 2px rgba(143, 166, 142, 0.18);
 }
 
-.stButton > button {
+.stButton > button,
+[data-testid="stFormSubmitButton"] > button,
+.stFormSubmitButton > button {
   background-color: #8FA68E;
   color: #FAF7F2;
   border: none;
@@ -54,7 +56,9 @@ p, label, .stMarkdown {
   font-size: 1rem;
 }
 
-.stButton > button:hover {
+.stButton > button:hover,
+[data-testid="stFormSubmitButton"] > button:hover,
+.stFormSubmitButton > button:hover {
   background-color: #7A9279;
   color: #FAF7F2;
 }

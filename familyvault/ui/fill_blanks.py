@@ -61,12 +61,18 @@ def _render_editor() -> None:
     with st.form("fill"):
         for field in fields_sorted:
             current = _to_str(doc.frontmatter.get(field.key))
+            hint = field.display_hint()
             if field.kind == templates.Kind.LONGTEXT:
                 inputs[field.key] = st.text_area(
                     field.label, value=current, height=120,
+                    help=hint or None,
                 )
             else:
-                inputs[field.key] = st.text_input(field.label, value=current)
+                inputs[field.key] = st.text_input(
+                    field.label, value=current,
+                    placeholder=hint or None,
+                    help=hint or None,
+                )
         submitted = st.form_submit_button("Save")
 
     st.write("")
