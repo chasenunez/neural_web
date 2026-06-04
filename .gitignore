@@ -1,11 +1,22 @@
-.venv/
-__pycache__/
-*.pyc
-.pytest_cache/
+# Node
+node_modules/
+dist/
+.vite/
+*.log
 
-# Local config and vault — every user has their own
-config.yaml
-vault/
+# Local env (do not commit secrets)
+.env
+.env.local
+.env.*.local
 
-# OS cruft
+# OS
 .DS_Store
+
+# Legacy (Python) — venv and pytest cache only; source stays in git
+legacy/.venv/
+legacy/.pytest_cache/
+legacy/vault/
+legacy/config.yaml
+legacy/__pycache__/
+**/__pycache__/
+*.pyc
