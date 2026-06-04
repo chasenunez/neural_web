@@ -106,6 +106,22 @@ def test_freeform_save_creates_files(fake_vault: Path):
     assert len(memories) == 1
 
 
+def test_photo_page_renders(fake_vault: Path):
+    """Regression: the photo page must not crash on st.image's numpy chain.
+
+    Catches the bug where `st.image()` blew up with a misleading
+    'numpy source directory' error on certain Pillow/numpy combinations.
+    """
+    at = AppTest.from_file(str(APP_PATH), default_timeout=15)
+    _run(at)
+    at.text_input[0].set_value("Chase").run()
+    at.button[0].click().run()
+    next(b for b in at.button if "photo" in b.label.lower()).click().run()
+    assert not at.exception
+    headings = [h.value for h in at.title]
+    assert any("photos" in h.lower() or "moment" in h.lower() for h in headings)
+
+
 def test_login_button_clickable_without_typing(fake_vault: Path):
     """Regression: Enter button must not be locked behind a committed value."""
     at = AppTest.from_file(str(APP_PATH), default_timeout=10)
