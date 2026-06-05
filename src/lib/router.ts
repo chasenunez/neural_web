@@ -1,9 +1,5 @@
-/**
- * Tiny hash-based router. Works without server config (good for GitHub Pages).
- *
- * Pages: 'login' | 'home' | 'freeform' | 'photo' | 'fill_blanks' | 'fill_edit'
- * State can ride along as a query-string-style suffix: `#/fill_edit?type=Person&name=Mom`.
- */
+// Hash-based router. Works on GitHub Pages without server config.
+// Params ride along as a query string: #/fill_edit?type=Person&name=Alex
 
 import { writable } from 'svelte/store';
 

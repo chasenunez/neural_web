@@ -103,8 +103,8 @@
   <button onclick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
   <button class="ghost" onclick={() => { editingType = undefined; editingPath = undefined; }}>← Back to list</button>
 {:else}
-  <h1>Help fill in blank entries</h1>
-  <p class="muted">These entries were created automatically from earlier memories.</p>
+  <h1>Fill in blank entries</h1>
+  <p class="muted">These were created as side-effects of earlier notes.</p>
 
   {#if loading}
     <p class="muted">Loading…</p>

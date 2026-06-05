@@ -1,13 +1,5 @@
-/**
- * Schemas for each type of markdown record in the vault.
- *
- * Each Template lists its fields in display importance order (most important
- * first, least important last). Field.kind controls how the value is rendered
- * in the UI and stored in YAML frontmatter.
- *
- * Same shape as the Python `templates.py` from the Streamlit version so a
- * vault populated by either app reads identically.
- */
+// Schemas for the three node types. Fields are listed in importance order;
+// the UI shows them top-down in this order.
 
 export type Kind =
   | 'text'      // single-line string
@@ -89,7 +81,7 @@ export const MEMORY: Template = {
   type: 'Memory',
   folder: 'Memories',
   fields: [
-    { key: 'title', label: 'Title (what)', kind: 'text', hint: 'A short title for this memory' },
+    { key: 'title', label: 'Title (what)', kind: 'text', hint: 'A short title for this note' },
     { key: 'when', label: 'When', kind: 'date' },
     { key: 'who', label: 'Who', kind: 'links', targetType: 'Person', hint: 'People present — separate multiple with commas' },
     { key: 'where', label: 'Where', kind: 'links', targetType: 'Place', hint: 'Places involved — separate multiple with commas' },

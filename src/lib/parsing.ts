@@ -1,10 +1,6 @@
-/**
- * Parse 5W free-text into normalized noun lists.
- *
- * Identical semantics to Python `parsing.py`: split on commas, semicolons,
- * `and`, ampersands, or slashes; trim; dedupe case-insensitively while
- * preserving the first-seen casing.
- */
+// Split a free-text "who" or "where" field into individual names.
+// Separators: commas, semicolons, "and", ampersands, slashes.
+// Dedupes case-insensitively but keeps the first-seen casing.
 
 const SPLIT = /\s*(?:,|;|\band\b|&|\/)\s*/i;
 

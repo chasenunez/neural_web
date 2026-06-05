@@ -1,10 +1,5 @@
-/**
- * Persistent + ephemeral stores for the app.
- *
- *   authStore       — GitHub + Dropbox tokens, persisted to localStorage
- *   userStore       — the family member's chosen display name (login.svelte sets this)
- *   photoPickStore  — caches a random photo selection across reruns of the photo page
- */
+// Stores for auth and session state. authStore + userStore are persisted
+// to localStorage; the rest live in memory only.
 
 import { writable, type Writable } from 'svelte/store';
 
@@ -39,16 +34,14 @@ function persisted<T>(key: string, initial: T): Writable<T> {
 export const authStore = persisted<AuthState>(STORAGE_KEY, {});
 export const userStore = persisted<string>(USER_KEY, '');
 
-// Ephemeral session state — held in memory only.
 export interface PhotoPick {
-  path: string;       // Dropbox path
-  dataUrl: string;    // base64 data URL ready to <img>
+  path: string;
+  dataUrl: string;
   bytes: number;
 }
 
 export const photoPickStore = writable<PhotoPick | undefined>(undefined);
 
-// Toast-style status banner shown across pages.
 export interface Status {
   kind: 'info' | 'warn';
   text: string;

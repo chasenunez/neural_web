@@ -61,7 +61,7 @@
 
   async function save() {
     if (!title.trim()) {
-      setStatus('warn', 'Please give the memory a short title.');
+      setStatus('warn', 'Give the note a short title.');
       return;
     }
     saving = true;
@@ -82,7 +82,7 @@
   }
 </script>
 
-<h1>A moment from your photos</h1>
+<h1>From the shared photos</h1>
 
 {#if loadingPhoto}
   <p class="muted">Finding a photo…</p>
@@ -125,6 +125,6 @@
   <textarea id="story" bind:value={story} rows="8" placeholder={hint('story')}></textarea>
 </div>
 
-<button onclick={save} disabled={saving || !$photoPickStore}>{saving ? 'Saving…' : 'Save memory'}</button>
+<button onclick={save} disabled={saving || !$photoPickStore}>{saving ? 'Saving…' : 'Save note'}</button>
 <button class="ghost" onclick={() => { photoPickStore.set(undefined); pickPhoto(); }} disabled={loadingPhoto}>Try a different photo</button>
 <button class="ghost" onclick={() => navigate('home')}>← Back</button>

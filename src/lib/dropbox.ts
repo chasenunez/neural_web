@@ -1,13 +1,5 @@
-/**
- * Dropbox client for the photo pool.
- *
- * Auth: OAuth 2 Authorization Code with PKCE (no client secret → safe for a
- * static site). Token + refresh token are persisted in authStore.
- *
- * Operations:
- *   - listImages(folderPath)  → list of file metadata
- *   - downloadFile(path)      → bytes, used to build a data URL for <img>
- */
+// Dropbox client for the shared photo pool. OAuth 2 with PKCE (no
+// client secret). Tokens persist in authStore.
 
 import { getConfig } from './config';
 

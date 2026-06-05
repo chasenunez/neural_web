@@ -14,16 +14,16 @@
 </script>
 
 <h1>Hello, {$userStore}</h1>
-<p class="muted">How would you like to add to the vault today?</p>
+<p class="muted">How would you like to contribute?</p>
 
 <button class="full" onclick={() => navigate('freeform')}>
-  Write a memory in your own words
+  Write a note in your own words
 </button>
 <button class="full" onclick={gotoPhoto}>
-  Let a photo prompt a memory
+  Let a photo prompt a note
 </button>
 <button class="full" onclick={() => navigate('fill_blanks')}>
-  Help fill in blank entries
+  Fill in blank entries
 </button>
 
 <div style="height:2rem;"></div>

@@ -1,9 +1,4 @@
-/**
- * Build-time configuration injected via Vite env vars.
- *
- * Set these as `VITE_*` variables in `.env.local` for local development,
- * and as repository secrets used by the deploy workflow for production.
- */
+// Build-time config read from Vite env vars. See .env.example.
 
 function required(name: string, value: string | undefined): string {
   if (!value) {
@@ -18,6 +13,8 @@ function required(name: string, value: string | undefined): string {
 function optional(value: string | undefined, fallback: string): string {
   return value && value.trim() ? value : fallback;
 }
+
+const DEFAULT_PHOTOS_PATH = '/Shared Photos';
 
 export class ConfigError extends Error {}
 
@@ -37,7 +34,7 @@ export function getConfig(): AppConfig {
     githubClientId: required('VITE_GITHUB_CLIENT_ID', env.VITE_GITHUB_CLIENT_ID),
     vaultRepo: required('VITE_VAULT_REPO', env.VITE_VAULT_REPO),
     dropboxAppKey: required('VITE_DROPBOX_APP_KEY', env.VITE_DROPBOX_APP_KEY),
-    dropboxPhotosPath: optional(env.VITE_DROPBOX_PHOTOS_PATH, '/Family Vault Photos'),
+    dropboxPhotosPath: optional(env.VITE_DROPBOX_PHOTOS_PATH, DEFAULT_PHOTOS_PATH),
   };
   return cached;
 }

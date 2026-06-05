@@ -1,10 +1,5 @@
-/**
- * Read / write Obsidian-style YAML frontmatter.
- *
- * Mirrors the Python `frontmatter.py` behavior:
- *   - Tolerant of missing or malformed frontmatter (preserves text in body).
- *   - Preserves dict key order on render (templates rely on field ordering).
- */
+// Read/write Obsidian-style YAML frontmatter. Tolerant of missing or
+// malformed frontmatter; preserves key order on render.
 
 import yaml from 'js-yaml';
 

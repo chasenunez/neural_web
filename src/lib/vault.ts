@@ -1,25 +1,14 @@
-/**
- * Vault path helpers and slug rules.
- *
- * The vault is a GitHub repository whose root contains People/, Places/,
- * Memories/, Photos/, and Templates/ folders (plain markdown + images).
- * This module only does path math — actual I/O lives in `github.ts`.
- */
+// Path math and slug rules. No I/O — see github.ts for that.
 
 import { byType, type TypeName } from './templates';
 
 const BAD_FILE_CHARS = /[\\/:*?"<>|]/g;
 const MULTI_SPACE = /\s+/g;
 
-/**
- * Turn a free-form display name into a stable filename stem.
- *
- * - Strip surrounding whitespace
- * - Collapse internal whitespace
- * - Remove characters illegal on common filesystems
- * - Strip apostrophes (so "Grandma's House" → "Grandmas House")
- * - Title-case (so "mary smith" and "Mary Smith" collide)
- */
+// Turn a free-form display name into a stable filename stem.
+// Strips apostrophes and illegal filesystem chars, collapses whitespace,
+// title-cases the result. "mary smith" and "Mary Smith" both produce
+// "Mary Smith" so they collide on the same file.
 export function normalizeName(name: string): string {
   let s = name.trim();
   s = s.replace(/['’]/g, '');

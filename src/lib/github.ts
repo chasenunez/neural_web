@@ -1,16 +1,5 @@
-/**
- * GitHub REST client for the vault repo.
- *
- * Auth model:
- *   - Primary: OAuth **Device Flow** (no client secret, safe for a static site).
- *   - Fallback: **Personal Access Token** pasted by the user — used when the
- *     Device Flow CORS-blocks in the browser (a known historical limitation).
- *
- * Vault model:
- *   - Vault is a single private GitHub repo (`owner/repo` from config).
- *   - One commit per save via the Contents API.
- *   - File SHAs are tracked per-session so updates send the right `sha`.
- */
+// GitHub REST client. Auth via Device Flow or pasted PAT.
+// One commit per write via the Contents API.
 
 import { getConfig } from './config';
 
@@ -51,10 +40,8 @@ export async function startDeviceFlow(): Promise<DeviceCodeResponse> {
   return await resp.json();
 }
 
-/**
- * Poll for the access token. Resolves with the token when the user authorizes,
- * or rejects on slow_down/expired_token errors per GitHub's protocol.
- */
+// Poll the token endpoint until the user authorizes. Honors slow_down,
+// gives up after 15 minutes regardless.
 export async function pollForToken(
   deviceCode: string,
   initialIntervalSec: number,

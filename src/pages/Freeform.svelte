@@ -21,7 +21,7 @@
 
   async function save() {
     if (!title.trim()) {
-      setStatus('warn', 'Please give the memory a short title.');
+      setStatus('warn', 'Give the note a short title.');
       return;
     }
     saving = true;
@@ -40,8 +40,8 @@
   }
 </script>
 
-<h1>Write a memory</h1>
-<p class="muted">Tell the story as completely or briefly as you like.</p>
+<h1>Write a note</h1>
+<p class="muted">Capture what happened. Anything you leave blank can be filled in later.</p>
 
 <div class="field">
   <label for="title">What</label>
@@ -75,5 +75,5 @@
   <textarea id="story" bind:value={story} rows="10" placeholder={hint('story')}></textarea>
 </div>
 
-<button onclick={save} disabled={saving}>{saving ? 'Saving…' : 'Save memory'}</button>
+<button onclick={save} disabled={saving}>{saving ? 'Saving…' : 'Save note'}</button>
 <button class="ghost" onclick={() => navigate('home')}>← Back</button>

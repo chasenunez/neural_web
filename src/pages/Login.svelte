@@ -64,16 +64,14 @@
 </script>
 
 <h1>Welcome</h1>
-<p class="muted">Sign in once to begin adding to the family vault.</p>
+<p class="muted">Sign in to start contributing.</p>
 
-<!-- Step 1: name -->
 <div class="field">
-  <label for="name">Your name</label>
-  <input id="name" type="text" bind:value={name} placeholder="The name your family knows you by" />
-  <span class="hint">Used to attribute commits in the vault history.</span>
+  <label for="name">Display name</label>
+  <input id="name" type="text" bind:value={name} placeholder="How you want to appear in the vault history" />
+  <span class="hint">Used to attribute your commits.</span>
 </div>
 
-<!-- Step 2: GitHub -->
 <div class="field">
   <!-- svelte-ignore a11y_label_has_associated_control -->
   <label>GitHub</label>
@@ -107,15 +105,14 @@
   {/if}
 </div>
 
-<!-- Step 3: Dropbox (optional) -->
 <div class="field">
   <!-- svelte-ignore a11y_label_has_associated_control -->
-  <label>Dropbox (for the photo prompt flow)</label>
+  <label>Dropbox</label>
   {#if $authStore.dropboxToken}
     <p class="muted">Connected.</p>
   {:else}
     <button class="ghost" onclick={connectDropbox}>Connect Dropbox</button>
-    <span class="hint">Optional. Skip if you only want freeform writing or fill-blanks.</span>
+    <span class="hint">Needed for the photo-prompt flow. Skip otherwise.</span>
   {/if}
 </div>
 

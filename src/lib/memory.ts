@@ -1,8 +1,4 @@
-/**
- * Orchestrate the side effects of saving a memory or filling a record.
- *
- * Talks to GitHub for vault I/O. Pure data shaping for everything else.
- */
+// Save a new note, fill in a stub. All vault writes funnel through here.
 
 import * as gh from './github';
 import * as fm from './frontmatter';
