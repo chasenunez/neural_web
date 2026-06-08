@@ -1,11 +1,16 @@
 <script lang="ts">
   import { authStore, userStore, setStatus } from '$lib/stores';
   import { navigate } from '$lib/router';
+  import { getConfig } from '$lib/config';
   import * as gh from '$lib/github';
   import * as dropbox from '$lib/dropbox';
 
+  const config = getConfig();
+  const hasDeviceFlow = !!config.githubClientId;
+  const hasDropbox = !!config.dropboxAppKey;
+
   let name = $state($userStore || '');
-  let pasteMode = $state(false);
+  let pasteMode = $state(!hasDeviceFlow);
   let pat = $state('');
 
   let deviceCode: gh.DeviceCodeResponse | undefined = $state();
@@ -90,14 +95,15 @@
     </div>
     <button class="ghost" onclick={cancelDeviceFlow}>Cancel</button>
   {:else}
-    <button onclick={startDeviceFlow}>Sign in with GitHub</button>
-    <button class="ghost" onclick={() => (pasteMode = !pasteMode)}>
-      {pasteMode ? 'Hide token field' : 'Paste a token instead'}
-    </button>
-    {#if pasteMode}
+    {#if hasDeviceFlow}
+      <button onclick={startDeviceFlow}>Sign in with GitHub</button>
+      <button class="ghost" onclick={() => (pasteMode = !pasteMode)}>
+        {pasteMode ? 'Hide token field' : 'Paste a token instead'}
+      </button>
+    {/if}
+    {#if pasteMode || !hasDeviceFlow}
       <p class="hint">
-        Paste a Personal Access Token with <code>repo</code> scope for the vault repo.
-        Use this if the Device Flow gets blocked by your browser.
+        Paste a Personal Access Token with <code>Contents: Read and write</code> on the vault repo.
       </p>
       <input type="password" bind:value={pat} placeholder="github_pat_…" />
       <button onclick={signInWithPat} disabled={!pat.trim()}>Use this token</button>
@@ -105,16 +111,18 @@
   {/if}
 </div>
 
-<div class="field">
-  <!-- svelte-ignore a11y_label_has_associated_control -->
-  <label>Dropbox</label>
-  {#if $authStore.dropboxToken}
-    <p class="muted">Connected.</p>
-  {:else}
-    <button class="ghost" onclick={connectDropbox}>Connect Dropbox</button>
-    <span class="hint">Needed for the photo-prompt flow. Skip otherwise.</span>
-  {/if}
-</div>
+{#if hasDropbox}
+  <div class="field">
+    <!-- svelte-ignore a11y_label_has_associated_control -->
+    <label>Dropbox</label>
+    {#if $authStore.dropboxToken}
+      <p class="muted">Connected.</p>
+    {:else}
+      <button class="ghost" onclick={connectDropbox}>Connect Dropbox</button>
+      <span class="hint">Needed for the photo-prompt flow. Skip otherwise.</span>
+    {/if}
+  </div>
+{/if}
 
 <button class="full" disabled={!name.trim() || !$authStore.githubToken} onclick={tryAdvance}>
   Enter

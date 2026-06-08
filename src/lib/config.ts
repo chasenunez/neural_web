@@ -19,9 +19,12 @@ const DEFAULT_PHOTOS_PATH = '/Shared Photos';
 export class ConfigError extends Error {}
 
 export interface AppConfig {
-  githubClientId: string;
+  // Required — the app does nothing without a vault to write to.
   vaultRepo: string;       // "owner/repo"
-  dropboxAppKey: string;
+
+  // Optional — empty string means the feature is disabled.
+  githubClientId: string;  // empty → no Device Flow, PAT-paste only
+  dropboxAppKey: string;   // empty → photo-prompt flow disabled
   dropboxPhotosPath: string;
 }
 
@@ -31,9 +34,9 @@ export function getConfig(): AppConfig {
   if (cached) return cached;
   const env = import.meta.env;
   cached = {
-    githubClientId: required('VITE_GITHUB_CLIENT_ID', env.VITE_GITHUB_CLIENT_ID),
     vaultRepo: required('VITE_VAULT_REPO', env.VITE_VAULT_REPO),
-    dropboxAppKey: required('VITE_DROPBOX_APP_KEY', env.VITE_DROPBOX_APP_KEY),
+    githubClientId: env.VITE_GITHUB_CLIENT_ID ?? '',
+    dropboxAppKey: env.VITE_DROPBOX_APP_KEY ?? '',
     dropboxPhotosPath: optional(env.VITE_DROPBOX_PHOTOS_PATH, DEFAULT_PHOTOS_PATH),
   };
   return cached;

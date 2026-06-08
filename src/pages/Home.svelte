@@ -1,6 +1,9 @@
 <script lang="ts">
   import { navigate } from '$lib/router';
   import { userStore, signOut, photoPickStore } from '$lib/stores';
+  import { getConfig } from '$lib/config';
+
+  const hasDropbox = !!getConfig().dropboxAppKey;
 
   function logout() {
     signOut();
@@ -19,9 +22,11 @@
 <button class="full" onclick={() => navigate('freeform')}>
   Write a note in your own words
 </button>
-<button class="full" onclick={gotoPhoto}>
-  Let a photo prompt a note
-</button>
+{#if hasDropbox}
+  <button class="full" onclick={gotoPhoto}>
+    Let a photo prompt a note
+  </button>
+{/if}
 <button class="full" onclick={() => navigate('fill_blanks')}>
   Fill in blank entries
 </button>
